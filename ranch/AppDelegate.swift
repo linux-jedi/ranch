@@ -15,10 +15,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
 
-
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     
-    // Google services api
+    // Google services api key setup
+    GMSServices.provideAPIKey("AIzaSyA4k9P3jhIEMWcHjOFCbcv0HmGsrcPArZQ")
+    
+    // stuff for removing storyboards
+    window = UIWindow(frame: UIScreen.main.bounds)
+    let homeViewController = MapViewController()
+    homeViewController.view.backgroundColor = UIColor.white
+    window!.rootViewController = homeViewController
+    window!.makeKeyAndVisible()
+    
     return true
   }
 
