@@ -26,7 +26,8 @@ class MapViewController: UIViewController,
   var mapView:GMSMapView!
   let locationDict = ["Yosemite": ["lat": 37.8651, "long": -119.5383],
                       "Yellowstone": ["lat": 44.4280, "long": -110.5885],
-                      "Joshua Tree": ["lat": 34.016344, "long": -116.169257]]
+                      "Joshua Tree": ["lat": 34.016344, "long": -116.169257],
+                      "UCSB":["lat": 34.411713 , "long": -119.846978]]
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -49,7 +50,7 @@ class MapViewController: UIViewController,
     
     // Initialize Picker
     let parkPicker = UIPickerView()
-    pickerData = ["Yosemite", "Yellowstone", "Joshua Tree"]
+    pickerData = ["Yosemite", "Yellowstone", "Joshua Tree", "UCSB"]
     
     parkPicker.delegate = self
     parkPicker.dataSource = self
@@ -67,7 +68,6 @@ class MapViewController: UIViewController,
     
     // Add points from web server
     getTrashPoints()
-
   }
   
   //MARK: HTTP Requests
@@ -115,6 +115,9 @@ class MapViewController: UIViewController,
       let coord = locationDict[pickerData[row]]
       print("New Location: \(coord)\n")
       
+      mapView.clear()
+      getTrashPoints()
+      
       let newLoc = GMSCameraPosition.camera(withLatitude: coord!["lat"]!, longitude: coord!["long"]!, zoom: 16)
       mapView.animate(to: newLoc)
     }
@@ -153,13 +156,16 @@ class MapViewController: UIViewController,
   func mapView(_ mapView: GMSMapView, didLongPressInfoWindowOf marker: GMSMarker) -> Void {
     let alert = UIAlertController(title: "Mark as Clean?", message: "WARNING: When marked as Clean, object will be removed from the map.", preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: NSLocalizedString("Clean", comment: "Default action"), style: .cancel, handler: { _ in
-      print("The \"Clean\" alert occured.\n")
-      
+      // remove marker
       marker.map = nil
+      
+      var trashMarker = marker as! TrashMarker
+      AF.request("https://ramranch.appspot.com/clean-site?id=\(trashMarker.photoid)")
     }))
     
     alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: "Default action"), style: .destructive, handler: { _ in
       print("The \"Cancel\" alert occured.\n")
+      // ie. do nothing
     }))
     
     self.present(alert, animated: true, completion: nil)
