@@ -13,8 +13,9 @@ import GoogleMaps
 import SnapKit
 import SwiftyJSON
 
-class MapViewController: UIViewController, UIPickerViewDelegate,
-  UIPickerViewDataSource {
+class MapViewController: UIViewController,
+  UIPickerViewDelegate, UIPickerViewDataSource,
+  GMSMapViewDelegate {
   
   // UIPicker
   var pickerData: [String] = [String]()
@@ -28,17 +29,22 @@ class MapViewController: UIViewController, UIPickerViewDelegate,
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    
     // Create a GMSCameraPosition that tells the map to display the
     let camera = GMSCameraPosition.camera(withLatitude: 37.8651, longitude: -119.5383, zoom: 14)
     mapView = GMSMapView.map(withFrame: view.bounds, camera: camera)
+    mapView.delegate = self
     view.addSubview(mapView)
     
     // Creates a marker in the center of the map.
-    let marker = GMSMarker()
+    let marker = TrashMarker()
     marker.position = CLLocationCoordinate2D(latitude: 37.8651, longitude: -119.5383)
     marker.title = "Yosemite National Park"
     marker.snippet = "Yosemite"
     marker.map = mapView
+    
+    marker.photoid = "yosemite"
+    marker.clean = false
     
     // Initialize Picker
     let parkPicker = UIPickerView()
@@ -112,5 +118,16 @@ class MapViewController: UIViewController, UIPickerViewDelegate,
       mapView.animate(to: newLoc)
     }
   }
+  
+  //MARK: GMSMapViewDelegate actions
+  func mapView(_ mapView: GMSMapView, markerInfoWindow marker: GMSMarker) -> UIView? {
+    let trashMarker = marker as! TrashMarker
+    print("photo id: \(trashMarker.photoid)\n")
+    
+    
+    
+    return nil
+  }
+
 }
 
