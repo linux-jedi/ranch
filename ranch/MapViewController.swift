@@ -10,6 +10,7 @@ import UIKit
 
 import Alamofire
 import GoogleMaps
+import SDWebImage
 import SnapKit
 import SwiftyJSON
 
@@ -43,7 +44,7 @@ class MapViewController: UIViewController,
     marker.snippet = "Yosemite"
     marker.map = mapView
     
-    marker.photoid = "yosemite"
+    marker.photoid = "MEaa81351200b749a9ce395148588b3853"
     marker.clean = false
     
     // Initialize Picker
@@ -120,14 +121,48 @@ class MapViewController: UIViewController,
   }
   
   //MARK: GMSMapViewDelegate actions
+  
+  // tap marker for photo to appear
   func mapView(_ mapView: GMSMapView, markerInfoWindow marker: GMSMarker) -> UIView? {
+    marker.tracksInfoWindowChanges = true
+    
     let trashMarker = marker as! TrashMarker
     print("photo id: \(trashMarker.photoid)\n")
     
+    var imageView = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 100, height: 100))
     
+    // ImageView: rounded corners
+    imageView.layer.cornerRadius = 15.0
+    imageView.clipsToBounds = true
     
-    return nil
+    // Download image
+    imageView.sd_setImage(with: URL(string: "https://storage.googleapis.com/ramranch-images/\(trashMarker.photoid)"), placeholderImage:nil, completed: { (image, error, cacheType, url) -> Void in
+      if ((error) != nil) {
+        // set the placeholder image here
+        imageView.image = UIImage(named: "defaultImage")
+      } else {
+        // success ... use the image
+        imageView.image = image
+      }
+    })
+    
+    return imageView
   }
-
+  
+  // long press to delete marker and photo
+  func mapView(_ mapView: GMSMapView, didLongPressInfoWindowOf marker: GMSMarker) -> Void {
+    let alert = UIAlertController(title: "Mark as Clean?", message: "WARNING: When marked as Clean, object will be removed from the map.", preferredStyle: .alert)
+    alert.addAction(UIAlertAction(title: NSLocalizedString("Clean", comment: "Default action"), style: .cancel, handler: { _ in
+      print("The \"Clean\" alert occured.\n")
+      
+      marker.map = nil
+    }))
+    
+    alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: "Default action"), style: .destructive, handler: { _ in
+      print("The \"Cancel\" alert occured.\n")
+    }))
+    
+    self.present(alert, animated: true, completion: nil)
+  }
 }
 

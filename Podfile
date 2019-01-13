@@ -1,4 +1,5 @@
 source 'https://github.com/CocoaPods/Specs.git'
+use_frameworks!
 
 target 'ranch' do
   pod 'Alamofire', '~> 5.0.0.beta.1'
