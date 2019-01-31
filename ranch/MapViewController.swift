@@ -24,10 +24,10 @@ class MapViewController: UIViewController,
   
   // Google Map System Components
   var mapView:GMSMapView!
-  let locationDict = ["Yosemite": ["lat": 37.8651, "long": -119.5383],
-                      "Yellowstone": ["lat": 44.4280, "long": -110.5885],
-                      "Joshua Tree": ["lat": 34.016344, "long": -116.169257],
-                      "UCSB":["lat": 34.411713 , "long": -119.846978]]
+  let locationDict = ["Yosemite": ["lat": 37.8651, "long": -119.5383, "zoom": 8.0],
+                      "Yellowstone": ["lat": 44.4280, "long": -110.5885, "zoom": 10],
+                      "Joshua Tree": ["lat": 33.873646, "long": -115.894051, "zoom": 9.5],
+                      "UCSB":["lat": 34.411713 , "long": -119.846978, "zoom": 15.0]]
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -118,7 +118,7 @@ class MapViewController: UIViewController,
       mapView.clear()
       getTrashPoints()
       
-      let newLoc = GMSCameraPosition.camera(withLatitude: coord!["lat"]!, longitude: coord!["long"]!, zoom: 16)
+      let newLoc = GMSCameraPosition.camera(withLatitude: coord!["lat"]!, longitude: coord!["long"]!, zoom: Float(coord!["zoom"]!))
       mapView.animate(to: newLoc)
     }
   }
@@ -132,7 +132,7 @@ class MapViewController: UIViewController,
     let trashMarker = marker as! TrashMarker
     print("photo id: \(trashMarker.photoid)\n")
     
-    var imageView = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 100, height: 100))
+    var imageView = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 150, height: 150))
     
     // ImageView: rounded corners
     imageView.layer.cornerRadius = 15.0
